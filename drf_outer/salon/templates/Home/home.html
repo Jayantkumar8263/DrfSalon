@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+    Home | Glow Salon
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <p class="eyebrow">
+            Premium salon experience
+        </p>
+
+        <h1>
+            Feel confident. Look beautiful.
+        </h1>
+
+        <p>
+            Book professional salon services
+            with trusted stylists.
+        </p>
+
+        <a href="{% url 'services' %}"
+           class="btn btn-primary">
+            Explore Services
+        </a>
+    </div>
+</section>
+
+<section class="section container">
+    <div class="section-heading">
+        <p class="eyebrow">
+            Our services
+        </p>
+
+        <h2>
+            Popular treatments
+        </h2>
+    </div>
+
+    <div class="service-grid">
+        {% for service in services %}
+            <article class="service-card">
+                <h3>
+                    {{ service.name }}
+                </h3>
+
+                <p>
+                    {{ service.description|truncatewords:15 }}
+                </p>
+
+                <p class="price">
+                    ₹{{ service.price }}
+                </p>
+
+                <span>
+                    {{ service.duration_minutes }} minutes
+                </span>
+            </article>
+        {% empty %}
+            <p>
+                No services available.
+            </p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+    Services | Glow Salon
+{% endblock %}
+
+{% block content %}
+<section class="section container">
+    <div class="section-heading">
+        <p class="eyebrow">
+            What we offer
+        </p>
+
+        <h1>
+            All Services
+        </h1>
+    </div>
+
+    <div class="service-grid">
+        {% for service in services %}
+            <article class="service-card">
+                <h2>
+                    {{ service.name }}
+                </h2>
+
+                <p>
+                    {{ service.description }}
+                </p>
+
+                <p class="price">
+                    ₹{{ service.price }}
+                </p>
+
+                <p>
+                    Duration:
+                    {{ service.duration_minutes }}
+                    minutes
+                </p>
+            </article>
+        {% empty %}
+            <p>
+                No active services found.
+            </p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
