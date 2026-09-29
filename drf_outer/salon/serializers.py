@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Services, Staff, Appointment
 
@@ -56,3 +57,26 @@ class AppointmentSerializer(serializers.ModelSerializer):
         )
 
         return data
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length= 4, style={"input_type": "password"}) # Password request mein accept hoga, lekin response mein return nahi hoga, iska matlab hai ki password ko write_only banaya gaya hai, taki wo sirf input ke liye ho aur output mein na aaye.
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "password",]
+
+        read_only_fields = ["id"]
+
+    def validate_username(self, value): # ye line username ko validate karne ke liye hai, agar username already exist karta hai to ye error raise karega.
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("This username is already taken.")
+        return value
+
+    def create(self, validated_data): # ye function user ko create karne ke liye hai, ye validated_data ko use karke user create karega.    
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+        )
+
+        return user

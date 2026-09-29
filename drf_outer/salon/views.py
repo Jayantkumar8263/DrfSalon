@@ -1,3 +1,4 @@
+from django.db.migrations import serializer
 from django.shortcuts import render # render returns an HttpResponse object with the rendered text of the template. It takes the request object, the name of the template, and a context dictionary as arguments.
 from salon.models import Services
 from rest_framework.decorators import api_view
@@ -7,6 +8,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from .models import Appointment, Services, Staff
 from .serializers import AppointmentSerializer, ServicesSerializer, StaffSerializer
+from rest_framework.views import APIView
+from .serializers import RegisterSerializer
 
 # Create your views here.
 
@@ -78,3 +81,25 @@ class AppointmentViewSet(ModelViewSet):
             return Appointment.objects.all()
 
         return Appointment.objects.filter(customer=user)
+    
+class RegisterAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):# ye function user registration ke liye hai, ye request ko accept karega aur usko validate karega, agar valid hoga to user create karega aur response return karega.
+        serializer = RegisterSerializer( data=request.data)# ye line request.data ko serializer me pass kar raha hai, jisse ki serializer ko pata chale ki data kya hai jo usko serialize karna hai, Reads incoming JSON from the request body
+        if serializer.is_valid():
+            user = serializer.save()
+
+            return Response(
+                {
+                    "message": "Registration successful.",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                    },
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
