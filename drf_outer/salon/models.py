@@ -50,3 +50,20 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.customer.username} - {self.service.name}"
+    class Meta:
+        constraints = [
+        models.UniqueConstraint(
+            fields=[
+                "staff",
+                "appointment_date",
+                "appointment_time",
+            ],
+            condition=models.Q(
+                status__in=[
+                    "pending",
+                    "confirmed",
+                ]
+            ),
+            name="unique_active_staff_slot",
+        ),
+    ]

@@ -1,0 +1,86 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}
+    Admin Dashboard | Glow Salon
+{% endblock %}
+
+{% block content %}
+<section class="section container">
+    <div class="section-heading">
+        <p class="eyebrow">
+            Admin dashboard
+        </p>
+
+        <h1>
+            Manage appointments
+        </h1>
+
+        <p>
+            View all bookings and update their status.
+        </p>
+    </div>
+
+    <div class="admin-controls">
+        <label for="status-filter">
+            Filter by status:
+        </label>
+
+        <select id="status-filter">
+            <option value="">
+                All
+            </option>
+            <option value="pending">
+                Pending
+            </option>
+            <option value="confirmed">
+                Confirmed
+            </option>
+            <option value="completed">
+                Completed
+            </option>
+            <option value="cancelled">
+                Cancelled
+            </option>
+        </select>
+
+        <label for="ordering-select">
+            Sort by:
+        </label>
+
+        <select id="ordering-select">
+            <option value="-appointment_date">
+                Date (newest first)
+            </option>
+            <option value="appointment_date">
+                Date (oldest first)
+            </option>
+            <option value="-appointment_time">
+                Time (latest first)
+            </option>
+            <option value="appointment_time">
+                Time (earliest first)
+            </option>
+            <option value="status">
+                Status (A–Z)
+            </option>
+            <option value="-status">
+                Status (Z–A)
+            </option>
+        </select>
+    </div>
+
+    <div id="admin-message"
+         class="form-message">
+        Loading appointments...
+    </div>
+
+    <div id="admin-appointments-container"
+         class="admin-appointment-list">
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
+{% endblock %}
