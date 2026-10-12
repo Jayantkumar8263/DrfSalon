@@ -1,7 +1,7 @@
 {% extends "base/base.html" %}
 
 {% block title %}
-    Services | Glow Salon
+Services | Glow Salon
 {% endblock %}
 
 {% block content %}
@@ -18,29 +18,27 @@
 
     <div class="service-grid">
         {% for service in services %}
-            <article class="service-card">
-                <h2>
-                    {{ service.name }}
-                </h2>
+        <article class="service-card">
+            <h2>
+                {{ service.name }}
+            </h2>
 
-                <p>
-                    {{ service.description }}
-                </p>
-
-                <p class="price">
-                    ₹{{ service.price }}
-                </p>
-
-                <p>
-                    Duration:
-                    {{ service.duration_minutes }}
-                    minutes
-                </p>
-            </article>
-        {% empty %}
             <p>
-                No active services found.
+                {{ service.description }}
             </p>
+
+            <p class="price">
+                ₹{{ service.price }}
+            </p>
+
+            <span>
+                {{ service.duration_minutes }} minutes
+            </span>
+
+            <a href="{% url 'booking' %}?service={{ service.id }}" class="btn btn-primary">
+                Book {{ service.name }}
+            </a>
+        </article>
         {% endfor %}
     </div>
 </section>

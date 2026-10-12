@@ -27,16 +27,29 @@
 }
 
 
+[hidden] {
+    display: none !important;
+}
+
+
 html {
     scroll-behavior: smooth;
 }
 
 
 body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     color: var(--dark);
     background: var(--white);
     font-family: Arial, sans-serif;
     line-height: 1.6;
+}
+
+
+main {
+    flex: 1;
 }
 
 
@@ -182,6 +195,14 @@ textarea:disabled {
 }
 
 
+#guest-links,
+#user-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
 .menu-toggle {
     display: none;
     padding: 8px;
@@ -190,6 +211,22 @@ textarea:disabled {
     background: transparent;
     cursor: pointer;
     font-size: 1.5rem;
+}
+
+
+.nav-logout {
+    padding: 0;
+    border: 0;
+    color: var(--dark);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+
+.nav-logout:hover {
+    color: var(--primary);
 }
 
 
@@ -306,6 +343,8 @@ textarea:disabled {
 
 
 .service-card {
+    display: flex;
+    flex-direction: column;
     padding: 24px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -348,6 +387,12 @@ textarea:disabled {
     margin-top: 8px;
     color: var(--muted);
     font-size: 0.9rem;
+}
+
+
+.service-card .btn {
+    margin-top: auto;
+    padding-top: 12px;
 }
 
 
@@ -564,6 +609,60 @@ textarea:disabled {
 }
 
 
+/* Profile page */
+
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 760px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+
+.profile-avatar {
+    display: grid;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--white);
+    background: var(--primary);
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+
+.profile-details {
+    flex: 1;
+}
+
+
+.profile-details h2 {
+    margin-bottom: 4px;
+}
+
+
+.profile-details p {
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 170px;
+}
+
+
 /* Admin dashboard */
 
 
@@ -650,13 +749,70 @@ textarea:disabled {
 
 
 .site-footer {
-    padding: 32px 0;
+    margin-top: auto;
+    padding: 56px 0 24px;
     color: var(--white);
     background: var(--dark);
 }
 
 
-.site-footer p {
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 32px;
+}
+
+
+.footer-brand h2,
+.footer-section h3 {
+    margin-bottom: 12px;
+}
+
+
+.footer-brand h2 {
+    color: var(--white);
+}
+
+
+.footer-brand p,
+.footer-section p {
+    color: #dddddd;
+    margin-bottom: 10px;
+}
+
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.footer-section a {
+    color: #dddddd;
+    text-decoration: none;
+}
+
+
+.footer-section a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+
+.footer-brand .btn {
+    margin-top: 12px;
+}
+
+
+.footer-bottom {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #444444;
+}
+
+
+.footer-bottom p {
     color: #dddddd;
     text-align: center;
 }
@@ -667,6 +823,14 @@ textarea:disabled {
 
 @media (max-width: 900px) {
     .service-grid {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    }
+
+
+    .footer-grid {
         grid-template-columns: repeat(
             2,
             minmax(0, 1fr)
@@ -711,8 +875,19 @@ textarea:disabled {
     }
 
 
-    .nav-links.nav-open a {
+    #guest-links,
+    #user-links {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+
+    .nav-links.nav-open a,
+    .nav-links.nav-open .nav-logout {
+        width: 100%;
         padding: 8px 0;
+        text-align: left;
     }
 
 
@@ -737,9 +912,25 @@ textarea:disabled {
 
 
     .appointment-card,
-    .admin-appointment-row {
+    .admin-appointment-row,
+    .profile-card {
         flex-direction: column;
         align-items: stretch;
+    }
+
+
+    .profile-avatar {
+        margin: 0 auto;
+    }
+
+
+    .profile-details {
+        text-align: center;
+    }
+
+
+    .profile-actions {
+        min-width: 0;
     }
 
 
@@ -802,6 +993,11 @@ textarea:disabled {
 
     .appointment-actions .btn {
         width: 100%;
+    }
+
+
+    .footer-grid {
+        grid-template-columns: 1fr;
     }
 }
 

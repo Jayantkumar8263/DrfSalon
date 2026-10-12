@@ -38,7 +38,7 @@ class StaffAdmin(admin.ModelAdmin):
 
     search_fields = [
         "name",
-        "designation",
+        "phone",
         "email",
     ]
 
@@ -57,10 +57,23 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_filter = [
         "status",
         "appointment_date",
+        "service",
+        "staff",
     ]
 
     search_fields = [
         "customer__username",
         "service__name",
         "staff__name",
+    ]
+    
+    list_select_related = [
+        "customer",
+        "service",
+        "staff",
+    ]
+
+    ordering = [
+        "-appointment_date",
+        "-appointment_time",
     ]

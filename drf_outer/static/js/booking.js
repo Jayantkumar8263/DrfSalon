@@ -49,13 +49,8 @@ document.addEventListener(
             );
 
         if (!token) {
-            message.textContent =
-                "Please login before booking.";
-
-            message.className =
-                "form-message form-message-warning";
-
-            submitButton.disabled = true;
+            window.location.href =
+                "/login/";
 
             return;
         }
@@ -65,6 +60,7 @@ document.addEventListener(
             type = ""
         ) {
             message.textContent = text;
+
             message.className =
                 `form-message ${type}`;
         }
@@ -76,6 +72,33 @@ document.addEventListener(
                 "Content-Type":
                     "application/json",
             };
+        }
+
+        function getSelectedServiceId() {
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            return params.get("service");
+        }
+
+        function resetTimeSelect(text) {
+            timeSelect.innerHTML = "";
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = "";
+            option.textContent = text;
+
+            timeSelect.appendChild(option);
+        }
+
+        function extractList(data) {
+            return data.results || data;
         }
 
         async function loadServices() {
@@ -97,7 +120,7 @@ document.addEventListener(
                 '<option value="">Select a service</option>';
 
             const services =
-                data.results || data;
+                extractList(data);
 
             services.forEach((service) => {
                 const option =
@@ -105,16 +128,38 @@ document.addEventListener(
                         "option"
                     );
 
-                option.value =
-                    service.id;
+                option.value = service.id;
 
                 option.textContent =
                     `${service.name} - ₹${service.price}`;
 
-                serviceSelect.appendChild(
-                    option
-                );
+                serviceSelect.appendChild(option);
             });
+
+            const selectedServiceId =
+                getSelectedServiceId();
+
+            if (selectedServiceId) {
+                const serviceOption =
+                    serviceSelect.querySelector(
+                        `option[value="${selectedServiceId}"]`
+                    );
+
+                if (serviceOption) {
+                    serviceSelect.value =
+                        selectedServiceId;
+
+                    showMessage(
+                        `${serviceOption.textContent} selected.`,
+                        "form-message-success"
+                    );
+                } else {
+                    showMessage(
+                        "The selected service is no longer available.",
+                        "form-message-warning"
+                    );
+                }
+            }
         }
 
         async function loadStaff() {
@@ -136,7 +181,7 @@ document.addEventListener(
                 '<option value="">Select a staff member</option>';
 
             const staffMembers =
-                data.results || data;
+                extractList(data);
 
             staffMembers.forEach((staff) => {
                 const option =
@@ -144,35 +189,13 @@ document.addEventListener(
                         "option"
                     );
 
-                option.value =
-                    staff.id;
+                option.value = staff.id;
 
                 option.textContent =
                     `${staff.name} - ${staff.designation}`;
 
-                staffSelect.appendChild(
-                    option
-                );
+                staffSelect.appendChild(option);
             });
-        }
-
-        function resetTimeSelect(
-            text
-        ) {
-            timeSelect.innerHTML =
-                "";
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value = "";
-            option.textContent = text;
-
-            timeSelect.appendChild(
-                option
-            );
         }
 
         async function loadAvailability() {
@@ -219,8 +242,7 @@ document.addEventListener(
                 const slots =
                     data.available_slots || [];
 
-                timeSelect.innerHTML =
-                    "";
+                timeSelect.innerHTML = "";
 
                 if (slots.length === 0) {
                     resetTimeSelect(
@@ -268,12 +290,10 @@ document.addEventListener(
             }
         }
 
-        async function submitBooking(
-            event
-        ) {
+        async function submitBooking(event) {
             event.preventDefault();
 
-            const data = {
+            const bookingData = {
                 service: Number(
                     serviceSelect.value
                 ),
@@ -284,14 +304,14 @@ document.addEventListener(
                     dateInput.value,
                 appointment_time:
                     timeSelect.value,
-                notes: notesInput.value,
+                notes: notesInput.value.trim(),
             };
 
             if (
-                !data.service ||
-                !data.staff ||
-                !data.appointment_date ||
-                !data.appointment_time
+                !bookingData.service ||
+                !bookingData.staff ||
+                !bookingData.appointment_date ||
+                !bookingData.appointment_time
             ) {
                 showMessage(
                     "Please complete all required fields.",
@@ -302,6 +322,7 @@ document.addEventListener(
             }
 
             submitButton.disabled = true;
+
             submitButton.textContent =
                 "Booking...";
 
@@ -315,10 +336,9 @@ document.addEventListener(
                         "/api/appointments/",
                         {
                             method: "POST",
-                            headers:
-                                authHeaders(),
+                            headers: authHeaders(),
                             body: JSON.stringify(
-                                data
+                                bookingData
                             ),
                         }
                     );
@@ -332,6 +352,10 @@ document.addEventListener(
                 ) {
                     localStorage.removeItem(
                         "authToken"
+                    );
+
+                    localStorage.removeItem(
+                        "currentUser"
                     );
 
                     window.location.href =
@@ -353,7 +377,7 @@ document.addEventListener(
                 }
 
                 showMessage(
-                    "Appointment booked successfully.",
+                    "Appointment booked successfully. Redirecting to your bookings...",
                     "form-message-success"
                 );
 
@@ -373,8 +397,7 @@ document.addEventListener(
                     "form-message-error"
                 );
             } finally {
-                submitButton.disabled =
-                    false;
+                submitButton.disabled = false;
 
                 submitButton.textContent =
                     "Book appointment";
@@ -397,7 +420,8 @@ document.addEventListener(
         );
 
         const today =
-            new Date().toISOString()
+            new Date()
+                .toISOString()
                 .split("T")[0];
 
         dateInput.min = today;

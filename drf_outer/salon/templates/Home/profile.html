@@ -1,0 +1,81 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}
+    My Profile | Salon
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <p class="eyebrow">
+                Your account
+            </p>
+
+            <h1>
+                My profile
+            </h1>
+
+            <p>
+                View your account information and
+                manage your salon appointments.
+            </p>
+        </div>
+
+        <div
+            id="profile-message"
+            class="form-message"
+        >
+            Loading profile...
+        </div>
+
+        <article
+            id="profile-card"
+            class="profile-card"
+            hidden
+        >
+            <div class="profile-avatar">
+                <span id="profile-initial">
+                    U
+                </span>
+            </div>
+
+            <div class="profile-details">
+                <h2 id="profile-username">
+                    Username
+                </h2>
+
+                <p id="profile-email">
+                    Email
+                </p>
+
+                <p id="profile-role">
+                    Customer account
+                </p>
+            </div>
+
+            <div class="profile-actions">
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="btn btn-primary"
+                >
+                    My appointments
+                </a>
+
+                <button
+                    type="button"
+                    id="profile-logout-button"
+                    class="btn btn-outline"
+                >
+                    Logout
+                </button>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

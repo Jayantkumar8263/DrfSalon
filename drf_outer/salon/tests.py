@@ -276,6 +276,66 @@ class AppointmentAPITests(APITestCase):
             status.HTTP_404_NOT_FOUND,
         )
 
+    def test_customer_cannot_cancel_completed_appointment(
+        self,
+    ):
+        appointment = self.create_appointment(
+            status_value="completed"
+        )
+
+        self.client.force_authenticate(
+            user=self.user
+        )
+
+        url = reverse(
+            "api-appointment-cancel",
+            args=[appointment.id],
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        appointment.refresh_from_db()
+
+        self.assertEqual(
+            appointment.status,
+            "completed",
+        )
+
+    def test_customer_cannot_cancel_cancelled_appointment(
+        self,
+    ):
+        appointment = self.create_appointment(
+            status_value="cancelled"
+        )
+
+        self.client.force_authenticate(
+            user=self.user
+        )
+
+        url = reverse(
+            "api-appointment-cancel",
+            args=[appointment.id],
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        appointment.refresh_from_db()
+
+        self.assertEqual(
+            appointment.status,
+            "cancelled",
+        )
+
     def test_customer_cannot_confirm_appointment(self):
         appointment = self.create_appointment(
             status_value="pending"
@@ -330,6 +390,66 @@ class AppointmentAPITests(APITestCase):
         self.assertEqual(
             appointment.status,
             "confirmed",
+        )
+
+    def test_admin_cannot_confirm_confirmed_appointment(
+        self,
+    ):
+        appointment = self.create_appointment(
+            status_value="confirmed"
+        )
+
+        self.client.force_authenticate(
+            user=self.admin_user
+        )
+
+        url = reverse(
+            "api-appointment-confirm",
+            args=[appointment.id],
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        appointment.refresh_from_db()
+
+        self.assertEqual(
+            appointment.status,
+            "confirmed",
+        )
+
+    def test_admin_cannot_confirm_cancelled_appointment(
+        self,
+    ):
+        appointment = self.create_appointment(
+            status_value="cancelled"
+        )
+
+        self.client.force_authenticate(
+            user=self.admin_user
+        )
+
+        url = reverse(
+            "api-appointment-confirm",
+            args=[appointment.id],
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        appointment.refresh_from_db()
+
+        self.assertEqual(
+            appointment.status,
+            "cancelled",
         )
 
     def test_admin_can_complete_confirmed_appointment(self):
@@ -388,6 +508,36 @@ class AppointmentAPITests(APITestCase):
         self.assertEqual(
             appointment.status,
             "pending",
+        )
+
+    def test_admin_cannot_complete_cancelled_appointment(
+        self,
+    ):
+        appointment = self.create_appointment(
+            status_value="cancelled"
+        )
+
+        self.client.force_authenticate(
+            user=self.admin_user
+        )
+
+        url = reverse(
+            "api-appointment-complete",
+            args=[appointment.id],
+        )
+
+        response = self.client.post(url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        appointment.refresh_from_db()
+
+        self.assertEqual(
+            appointment.status,
+            "cancelled",
         )
 
     def test_non_staff_user_cannot_update_appointment(
@@ -589,7 +739,7 @@ class AdminDashboardTests(TestCase):
 
         self.assertEqual(
             response.status_code,
-            200,
+            status.HTTP_200_OK,
         )
 
     def test_inactive_staff_cannot_access_admin_dashboard(
@@ -598,7 +748,9 @@ class AdminDashboardTests(TestCase):
         self.staff_user.is_active = False
 
         self.staff_user.save(
-            update_fields=["is_active"]
+            update_fields=[
+                "is_active",
+            ]
         )
 
         self.client.login(

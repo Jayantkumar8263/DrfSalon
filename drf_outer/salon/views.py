@@ -1,3 +1,4 @@
+from rest_framework.authtoken.models import Token
 from django.db.migrations import serializer
 from django.shortcuts import render # render returns an HttpResponse object with the rendered text of the template. It takes the request object, the name of the template, and a context dictionary as arguments.
 from salon.models import Services
@@ -18,7 +19,14 @@ from rest_framework.filters import OrderingFilter
 from django.contrib.admin.views.decorators import (
     staff_member_required,
 )
-from django.shortcuts import render
+from rest_framework.authentication import (
+    TokenAuthentication,
+)
+from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+
 # Create your views here.
 
 def home(request):
@@ -338,26 +346,108 @@ class AvailabilityAPIView(APIView):
             }
         )    
 class RegisterAPIView(APIView):
-    permission_classes = [AllowAny]
+    authentication_classes = [
+        TokenAuthentication,
+    ]
 
-    def post(self, request):# ye function user registration ke liye hai, ye request ko accept karega aur usko validate karega, agar valid hoga to user create karega aur response return karega.
-        serializer = RegisterSerializer( data=request.data)# ye line request.data ko serializer me pass kar raha hai, jisse ki serializer ko pata chale ki data kya hai jo usko serialize karna hai, Reads incoming JSON from the request body
-        if serializer.is_valid():
-            user = serializer.save()
+    permission_classes = [
+        AllowAny,
+    ]
 
+    def post(self, request):
+        username = request.data.get(
+            "username"
+        )
+
+        email = request.data.get(
+            "email"
+        )
+
+        password = request.data.get(
+            "password"
+        )
+
+        if not username:
             return Response(
                 {
-                    "message": "Registration successful.",
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
-                    },
+                    "username": (
+                        "Username is required."
+                    )
                 },
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not email:
+            return Response(
+                {
+                    "email": (
+                        "Email is required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not password:
+            return Response(
+                {
+                    "password": (
+                        "Password is required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(
+            username=username
+        ).exists():
+            return Response(
+                {
+                    "username": (
+                        "Username already exists."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(
+            email=email
+        ).exists():
+            return Response(
+                {
+                    "email": (
+                        "Email already exists."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            is_staff=False,
+            is_superuser=False,
+        )
+
+        token, created = Token.objects.get_or_create(
+            user=user
+        )
+
+        return Response(
+            {
+                "detail": (
+                    "Account created successfully."
+                ),
+                "token": token.key,
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "is_staff": user.is_staff,
+                },
+            },
+            status=status.HTTP_201_CREATED,
+        )
     
 def login(request):
     return render(request, "Home/login.html")
@@ -384,8 +474,10 @@ def dashboard_page(request):
     )
 
 # Admin Dashboard 
-@staff_member_required(
-    login_url="/login/"
-)
+@staff_member_required(login_url="/login/")  # This decorator ensures that only staff members can access the admin dashboard. If a non-staff user tries to access it, they will be redirected to the login page.
 def admin_dashboard(request):
     return render(request, "admin_dashboard.html")
+
+
+def customer_profile(request):
+    return render(request,"Home/profile.html")

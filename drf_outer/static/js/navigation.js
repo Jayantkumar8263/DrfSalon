@@ -33,12 +33,50 @@ document.addEventListener(
                 "#logout-button"
             );
 
+        const appointmentsLink =
+            document.querySelector(
+                "#appointments-link"
+            );
+
         const token =
             localStorage.getItem(
                 "authToken"
             );
 
-        if (token) {
+        const storedUser =
+            localStorage.getItem(
+                "currentUser"
+            );
+
+        let currentUser = null;
+
+        if (storedUser) {
+            try {
+                currentUser = JSON.parse(
+                    storedUser
+                );
+            } catch (error) {
+                localStorage.removeItem(
+                    "currentUser"
+                );
+            }
+        }
+
+        function showGuestNavigation() {
+            if (guestLinks) {
+                guestLinks.hidden = false;
+            }
+
+            if (userLinks) {
+                userLinks.hidden = true;
+            }
+
+            if (adminLink) {
+                adminLink.hidden = true;
+            }
+        }
+
+        function showUserNavigation(user) {
             if (guestLinks) {
                 guestLinks.hidden = true;
             }
@@ -47,73 +85,42 @@ document.addEventListener(
                 userLinks.hidden = false;
             }
 
-            checkAdminUser(token);
-        } else {
-            if (guestLinks) {
-                guestLinks.hidden = false;
-            }
-
-            if (userLinks) {
-                userLinks.hidden = true;
+            if (adminLink) {
+                adminLink.hidden =
+                    !user.is_staff;
             }
         }
 
-        async function checkAdminUser(
-            authToken
-        ) {
-            try {
-                const response =
-                    await fetch(
-                        "/api/appointments/",
-                        {
-                            method: "GET",
-                            headers: {
-                                "Authorization":
-                                    `Token ${authToken}`,
-                            },
-                        }
-                    );
+        function logoutUser() {
+            localStorage.removeItem(
+                "authToken"
+            );
 
-                if (
-                    response.status === 401
-                ) {
-                    localStorage.removeItem(
-                        "authToken"
-                    );
+            localStorage.removeItem(
+                "currentUser"
+            );
 
-                    if (guestLinks) {
-                        guestLinks.hidden =
-                            false;
+            window.location.href = "/";
+        }
+
+        if (token && currentUser) {
+            showUserNavigation(currentUser);
+        } else {
+            showGuestNavigation();
+        }
+
+        if (appointmentsLink) {
+            appointmentsLink.addEventListener(
+                "click",
+                (event) => {
+                    if (!token) {
+                        event.preventDefault();
+
+                        window.location.href =
+                            "/login/";
                     }
-
-                    if (userLinks) {
-                        userLinks.hidden =
-                            true;
-                    }
-
-                    return;
                 }
-
-                if (
-                    response.ok &&
-                    adminLink
-                ) {
-                    /*
-                     * A successful response alone
-                     * does not prove the user is admin.
-                     *
-                     * The admin link is hidden by
-                     * default and can be shown only
-                     * if your login response includes
-                     * is_staff.
-                     */
-                }
-            } catch (error) {
-                console.error(
-                    "Unable to check user:",
-                    error
-                );
-            }
+            );
         }
 
         if (
@@ -124,8 +131,9 @@ document.addEventListener(
                 "click",
                 () => {
                     const isOpen =
-                        navLinks.classList
-                            .toggle("nav-open");
+                        navLinks.classList.toggle(
+                            "nav-open"
+                        );
 
                     menuToggle.setAttribute(
                         "aria-expanded",
@@ -138,14 +146,7 @@ document.addEventListener(
         if (logoutButton) {
             logoutButton.addEventListener(
                 "click",
-                () => {
-                    localStorage.removeItem(
-                        "authToken"
-                    );
-
-                    window.location.href =
-                        "/";
-                }
+                logoutUser
             );
         }
     }

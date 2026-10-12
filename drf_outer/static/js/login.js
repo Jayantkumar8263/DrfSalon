@@ -85,15 +85,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     "authToken",
                     data.token
                 );
-
+                localStorage.setItem(
+                    "currentUser",
+                    JSON.stringify(data.user)
+                );
                 showMessage(
                     "Login successful. Redirecting...",
                     "form-message-success"
                 );
 
                 window.setTimeout(() => {
-                    window.location.href =
-                        "/booking/";
+                    if (data.user.is_staff) {
+                        window.location.href =
+                            "/admin-dashboard/";
+                    } else {
+                        window.location.href =
+                            "/";
+                    }
                 }, 700);
             } catch (error) {
                 showMessage(
