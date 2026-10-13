@@ -53,8 +53,6 @@ Quick start (typical steps):
    pip install -r requirements.txt
 
 4. Create a .env file or set environment variables (example values)
-
-   SECRET_KEY=changeme
    DEBUG=True
    DATABASE_URL=sqlite:///db.sqlite3
 
@@ -70,7 +68,7 @@ Quick start (typical steps):
 
    python manage.py runserver
 
-Open the API at http://127.0.0.1:8000/ and the admin at http://127.0.0.1:8000/admin/ (if enabled).
+Open the API at http://127.0.0.1:8000/
 
 If the frontend requires a build step (check package.json):
 
