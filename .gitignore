@@ -1,0 +1,16 @@
+env
+*.db
+*.sqlite3
+.env
+pycache
+__pycache__
+
+staticfiles
+mediafiles
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+migrations/
+extra.txt

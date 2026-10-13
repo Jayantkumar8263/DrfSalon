@@ -1,67 +1,353 @@
 {% extends "base/base.html" %}
+{% load static %}
 
 {% block title %}
     Home | Glow Salon
 {% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="container">
-        <p class="eyebrow">
-            Premium salon experience
+<section class="home-hero">
+    <div class="home-hero__content">
+        <p class="eyebrow home-hero__eyebrow">
+            Your time to glow
         </p>
 
         <h1>
-            Feel confident. Look beautiful.
+            A little time for you.
+            <span>A whole new feeling.</span>
         </h1>
 
-        <p>
-            Book professional salon services
-            with trusted stylists.
+        <p class="home-hero__description">
+            Step into a calm, welcoming salon where
+            thoughtful care, skilled hands, and a
+            little self-care come together.
         </p>
 
-        <a href="{% url 'services' %}"
-           class="btn btn-primary">
-            Explore Services
-        </a>
+        <div class="home-hero__actions">
+            <a
+                href="{% url 'services' %}"
+                class="btn btn-primary"
+            >
+                Explore our services
+            </a>
+
+            <a
+                href="{% url 'booking' %}"
+                class="home-hero__text-link"
+            >
+                Book your visit
+                <span aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <div class="home-hero__note">
+            <span class="home-hero__note-dot"></span>
+            Thoughtful care. Beautiful results.
+        </div>
+    </div>
+
+    <div class="home-hero__visual">
+        <div
+            class="home-hero__image"
+            role="img"
+            aria-label="A calm, light-filled salon interior"
+        ></div>
+
+        <div class="home-hero__image-caption">
+            <span>Come as you are.</span>
+            <span>Leave feeling renewed.</span>
+        </div>
+
+        <div class="home-hero__decor" aria-hidden="true">
+            G
+        </div>
+    </div>
+
+    <a
+        class="home-hero__scroll"
+        href="#experience"
+        aria-label="Scroll to learn about the salon"
+    >
+        <span>Discover Glow</span>
+        <span aria-hidden="true">↓</span>
+    </a>
+</section>
+
+
+<section
+    id="experience"
+    class="experience-section section"
+>
+    <div class="container experience-layout">
+        <div class="experience-copy">
+            <p class="eyebrow">
+                More than a salon visit
+            </p>
+
+            <h2>
+                Your moment to
+                <span>pause and feel good.</span>
+            </h2>
+        </div>
+
+        <div class="experience-description">
+            <p>
+                At Glow Salon, we believe a visit
+                should feel as good as the result.
+                Our space is welcoming, our service
+                is personal, and every appointment is
+                shaped around you.
+            </p>
+
+            <p>
+                Whether you’re here for a fresh
+                haircut, a beard refresh, or a
+                feel-good treatment, take a breath
+                and let us take care of the details.
+            </p>
+
+            <a
+                href="{% url 'services' %}"
+                class="inline-link"
+            >
+                Find your service
+                <span aria-hidden="true">→</span>
+            </a>
+        </div>
     </div>
 </section>
 
-<section class="section container">
-    <div class="section-heading">
-        <p class="eyebrow">
-            Our services
-        </p>
 
-        <h2>
-            Popular treatments
-        </h2>
+<section class="experience-points">
+    <div class="container experience-points__grid">
+        <article class="experience-point">
+            <span class="experience-point__number">
+                01
+            </span>
+
+            <h3>
+                Personal, never rushed
+            </h3>
+
+            <p>
+                We listen first, so your service
+                feels right for you.
+            </p>
+        </article>
+
+        <article class="experience-point">
+            <span class="experience-point__number">
+                02
+            </span>
+
+            <h3>
+                Skilled hands
+            </h3>
+
+            <p>
+                Our team brings care and attention
+                to every appointment.
+            </p>
+        </article>
+
+        <article class="experience-point">
+            <span class="experience-point__number">
+                03
+            </span>
+
+            <h3>
+                A calmer kind of self-care
+            </h3>
+
+            <p>
+                A comfortable space to pause,
+                refresh, and feel your best.
+            </p>
+        </article>
     </div>
+</section>
 
-    <div class="service-grid">
-        {% for service in services %}
-            <article class="service-card">
-                <h3>
-                    {{ service.name }}
-                </h3>
+
+<section class="featured-services section">
+    <div class="container">
+        <div class="featured-services__heading">
+            <div class="section-heading">
+                <p class="eyebrow">
+                    A few ways to feel refreshed
+                </p>
+
+                <h2>
+                    Find your next
+                    <span>feel-good moment.</span>
+                </h2>
 
                 <p>
-                    {{ service.description|truncatewords:15 }}
+                    Explore a selection of our salon
+                    services and find the right one
+                    for you.
                 </p>
+            </div>
 
-                <p class="price">
-                    ₹{{ service.price }}
-                </p>
+            <a
+                href="{% url 'services' %}"
+                class="inline-link featured-services__all-link"
+            >
+                View all services
+                <span aria-hidden="true">→</span>
+            </a>
+        </div>
 
-                <span>
-                    {{ service.duration_minutes }} minutes
-                </span>
-            </article>
-        {% empty %}
-            <p>
-                No services available.
+        <div class="service-grid home-service-grid">
+            {% for service in services %}
+                <article class="service-card home-service-card">
+                    <div class="home-service-card__top">
+                        <span class="home-service-card__index">
+                            {% if forloop.counter < 10 %}
+                                0{{ forloop.counter }}
+                            {% else %}
+                                {{ forloop.counter }}
+                            {% endif %}
+                        </span>
+
+                        <span
+                            class="home-service-card__arrow"
+                            aria-hidden="true"
+                        >
+                            ↗
+                        </span>
+                    </div>
+
+                    <h3>
+                        {{ service.name }}
+                    </h3>
+
+                    <p>
+                        {{ service.description|truncatewords:18 }}
+                    </p>
+
+                    <div class="home-service-card__meta">
+                        <span>
+                            {{ service.duration_minutes }} min
+                        </span>
+
+                        <span class="price">
+                            ₹{{ service.price }}
+                        </span>
+                    </div>
+
+                    <a
+                        href="{% url 'booking' %}?service={{ service.id }}"
+                        class="home-service-card__link"
+                        aria-label="Book {{ service.name }}"
+                    >
+                        Choose this service
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </article>
+            {% empty %}
+                <div class="empty-services">
+                    <p>
+                        Our services are being updated.
+                        Please check back soon.
+                    </p>
+
+                    <a
+                        href="{% url 'services' %}"
+                        class="inline-link"
+                    >
+                        View services
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="visit-section section">
+    <div class="container visit-panel">
+        <div class="visit-panel__copy">
+            <p class="eyebrow">
+                Your visit, made simple
             </p>
-        {% endfor %}
+
+            <h2>
+                Choose your service.
+                We’ll take it from here.
+            </h2>
+
+            <p>
+                Browse our services, choose a
+                stylist and time that suits you,
+                then book your appointment online.
+            </p>
+
+            <a
+                href="{% url 'services' %}"
+                class="btn btn-primary"
+            >
+                Find your service
+            </a>
+        </div>
+
+        <div class="visit-steps">
+            <article class="visit-step">
+                <span>01</span>
+                <div>
+                    <h3>Explore</h3>
+                    <p>
+                        Find a service that feels right.
+                    </p>
+                </div>
+            </article>
+
+            <article class="visit-step">
+                <span>02</span>
+                <div>
+                    <h3>Choose</h3>
+                    <p>
+                        Select your stylist, date,
+                        and available time.
+                    </p>
+                </div>
+            </article>
+
+            <article class="visit-step">
+                <span>03</span>
+                <div>
+                    <h3>Enjoy</h3>
+                    <p>
+                        Arrive, relax, and enjoy
+                        your salon experience.
+                    </p>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+
+<section class="home-cta">
+    <div class="container home-cta__inner">
+        <div>
+            <p class="eyebrow">
+                Your chair is waiting
+            </p>
+
+            <h2>
+                Ready for a little
+                time for yourself?
+            </h2>
+        </div>
+
+        <a
+            href="{% url 'services' %}"
+            class="btn btn-light"
+        >
+            Explore and book
+            <span aria-hidden="true">→</span>
+        </a>
     </div>
 </section>
 {% endblock %}
